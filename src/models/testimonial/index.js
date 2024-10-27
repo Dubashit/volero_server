@@ -28,6 +28,10 @@ const Testimonial = db.define(
         countOfStars: {
             type: DataTypes.INTEGER,
             allowNull: false
+        },
+        relation: {
+            type: DataTypes.STRING,
+            allowNull: false
         }
     },
     {

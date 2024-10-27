@@ -6,6 +6,19 @@ const cors = require('cors')
 const path = require('path');
 const bodyParser = require('body-parser')
 
+// const allowedOrigins = ['http://localhost:3000', 'http://localhost:3002'];
+
+// app.use(cors({
+//     origin: (origin, callback) => {
+//         if (allowedOrigins.includes(origin) || !origin) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error('Not allowed by CORS'));
+//         }
+//     },
+//     credentials: true,
+// }))
+
 app.use(cors())
 
 app.use('/public', express.static(path.resolve(__dirname, '..', 'public')));
@@ -27,8 +40,8 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 db.authenticate()
-    .then(()=>console.log("Database connected..."))
-    .catch(err=>console.error("Error connection to the database", err))
+    .then(() => console.log("Database connected..."))
+    .catch(err => console.error("Error connection to the database", err))
 
 db.sync()
 

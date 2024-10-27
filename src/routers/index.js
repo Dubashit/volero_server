@@ -10,6 +10,7 @@ const resumeRouter = require('./resume')
 const articleRouter = require('./article')
 const testimonialRouter = require('./testimonial')
 const requestRegisterRouter = require('./requestRegister')
+const requestForPointsRouter = require('./requestForPoints')
 
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
@@ -22,5 +23,6 @@ router.use('/resume', resumeRouter)
 router.use('/articles', articleRouter)
 router.use('/testimonials', testimonialRouter)
 router.use('/requestRegister', requestRegisterRouter)
+router.use('/requestForPoints', requestForPointsRouter)
 
 module.exports = router

@@ -6,7 +6,7 @@ const path = require('path');
 const fs = require('fs');
 
 router.get('/search', async (req, res) => {
-    const { author, position, countOfStars } = req.query;
+    const { author, position, countOfStars, relation } = req.query;
     try {
         const whereClause = {};
         if (author) {
@@ -22,6 +22,11 @@ router.get('/search', async (req, res) => {
         if (countOfStars) {
             whereClause.countOfStars = {
                 [Op.eq]: Number(countOfStars)
+            };
+        }
+        if (relation) {
+            whereClause.relation = {
+                [Op.iLike]: `%${relation}%`
             };
         }
         const testimonials = await Testimonial.findAll({
@@ -76,12 +81,12 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
     storage,
-    limits: { fileSize: 50 * 1024 * 1024 },
+    limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter,
 });
 
 router.post('/', upload.single('image'), async (req, res) => {
-    const { comment, author, position, countOfStars } = req.body;
+    const { comment, author, position, countOfStars, relation } = req.body;
 
     const filePath = `/testimonials/${req.file.filename}`;
 
@@ -91,7 +96,8 @@ router.post('/', upload.single('image'), async (req, res) => {
             author,
             position,
             image: filePath,
-            countOfStars
+            countOfStars,
+            relation
         });
         res.status(200).json(testimonial);
     } catch (error) {
@@ -101,7 +107,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 
 router.put('/:id', upload.single('image'), async (req, res) => {
     const id = req.params.id;
-    const { author, position, comment, countOfStars, oldImage } = req.body;
+    const { author, position, comment, countOfStars, oldImage, relation } = req.body;
     try {
         if (req.file && oldImage) {
             const oldFilePath = path.join(__dirname, '../../../public', oldImage);
@@ -121,7 +127,8 @@ router.put('/:id', upload.single('image'), async (req, res) => {
             author,
             position,
             countOfStars,
-            image: previewPath
+            image: previewPath,
+            relation
         }
 
         console.log('Updating testimonial with data:', updatedData);
