@@ -19,3 +19,13 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Certificates
+*.crt
+*.cert
+*.pem
+*.key
+
+# Specific certificate files
+server.cert
+server.key
