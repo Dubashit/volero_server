@@ -1,13 +1,20 @@
-FROM node:16-alpine
+# Используем Node.js образ для запуска сервера
+FROM node:18
 
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+# Копируем package.json и package-lock.json для установки зависимостей
+COPY package*.json ./
 
+# Устанавливаем зависимости
 RUN npm install
 
+# Копируем весь проект в контейнер
 COPY . .
 
-EXPOSE 3000
+# Порт, на котором работает сервер
+EXPOSE 5000
 
-CMD ["npm", "start"]
+# Запуск сервера
+CMD ["node", "index.js"]
