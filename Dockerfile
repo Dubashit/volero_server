@@ -1,5 +1,5 @@
 # Используем Node.js как базовый образ
-FROM node:18
+FROM node:16-alpine
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
@@ -10,7 +10,7 @@ RUN npm install
 COPY . .
 
 # Указываем порт для сервера
-EXPOSE 4444
+EXPOSE 3000
 
 # Запускаем сервер
 CMD ["npm", "start"]
