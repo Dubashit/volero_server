@@ -1,6 +1,8 @@
 const router = require('express').Router();
 const { Op } = require('sequelize');
 const Vacancy = require('../../models/vacancy');
+const multer = require('multer');
+const upload = multer();
 
 router.get('/search', async (req, res) => {
     const { title, status } = req.query;
@@ -45,38 +47,61 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+// router.post('/', async (req, res) => {
+//     const { title, status, seoUrl, seoTitle, seoDescription, body, location, employmentType } = req.body;
+//     try {
+//         const vacancy = await Vacancy.create({
+//             title: title,
+//             status: status,
+//             seoUrl: seoUrl,
+//             seoTitle: seoTitle,
+//             seoDescription: seoDescription,
+//             body: body,
+//             location: location,
+//             employmentType: employmentType
+//         });
+//         res.status(200).json(vacancy);
+//     } catch (error) {
+//         res.status(500).json({ error: "Internal server error" });
+//     }
+// });
+
+router.post('/', upload.none(), async (req, res) => {
+    console.log(req.body);
+
     const { title, status, seoUrl, seoTitle, seoDescription, body, location, employmentType } = req.body;
+
     try {
         const vacancy = await Vacancy.create({
-            title: title,
-            status: status,
-            seoUrl: seoUrl,
-            seoTitle: seoTitle,
-            seoDescription: seoDescription,
-            body: body,
-            location: location,
-            employmentType: employmentType
+            title,
+            seoUrl,
+            seoTitle,
+            seoDescription,
+            body,
+            location,
+            employmentType,
+            status
         });
         res.status(200).json(vacancy);
     } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: "Internal server error!", details: error.message });
     }
 });
 
-router.put('/:id', async (req, res) => {
+
+router.put('/:id', upload.none(), async (req, res) => {
     const id = req.params.id;
     const { title, status, seoUrl, seoTitle, seoDescription, body, location, employmentType } = req.body;
     try {
         const vacancy = await Vacancy.update({
-            title: title,
-            status: status,
-            seoUrl: seoUrl,
-            seoTitle: seoTitle,
-            seoDescription: seoDescription,
-            body: body,
-            location: location,
-            employmentType: employmentType
+            title,
+            seoUrl,
+            seoTitle,
+            seoDescription,
+            body,
+            location,
+            employmentType,
+            status
         }, { where: { id } });
         res.status(200).json(vacancy);
     } catch (error) {

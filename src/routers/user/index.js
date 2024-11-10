@@ -1,6 +1,8 @@
 const router = require('express').Router()
 const bcrypt = require('bcrypt')
 const User = require('../../models/user')
+const axios = require('axios')
+const soap = require('soap')
 
 router.get("/", async (req, res) => {
     try {
@@ -10,6 +12,35 @@ router.get("/", async (req, res) => {
         res.status(500).json({ error: "Internal server error" })
     }
 })
+
+// router.get('/some', async (req, res) => {
+//     const wsdlUrl = 'https://www.volero.net/admin/plugins/exportXML/ws/?wsdl';
+//     const ACCESS_TOKEN = '043d234bec8ab44cc26e55ed24086061';
+//     try {
+//         const client = await soap.createClientAsync(wsdlUrl);
+
+//         // Добавляем AuthHeader с токеном в виде SOAP-заголовка
+//         client.addSoapHeader({
+//             AuthHeader: {
+//                 Token: ACCESS_TOKEN,
+//             }
+//         });
+
+//         // Вызываем метод SOAP-сервиса, например, GetOperationsList
+//         client.GetOperationsList({}, (err, result) => {
+//             if (err) {
+//                 console.error('Ошибка при вызове SOAP-операции:', err);
+//                 return res.status(500).send('Ошибка при получении данных');
+//             }
+
+//             res.json(result);
+//         });
+
+//     } catch (error) {
+//         console.error('Ошибка при подключении к SOAP-сервису:', error);
+//         res.status(500).send('Ошибка при подключении к сервису');
+//     }
+// });
 
 router.get("/:username", async (req, res) => {
     const username = req.params.username

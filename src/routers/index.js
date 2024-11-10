@@ -11,6 +11,9 @@ const articleRouter = require('./article')
 const testimonialRouter = require('./testimonial')
 const requestRegisterRouter = require('./requestRegister')
 const requestForPointsRouter = require('./requestForPoints')
+const agentsRouter = require('./agent')
+const bookingsRouter = require('./booking')
+const rewardsRouter = require('./reward')
 
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
@@ -24,5 +27,8 @@ router.use('/articles', articleRouter)
 router.use('/testimonials', testimonialRouter)
 router.use('/requestRegister', requestRegisterRouter)
 router.use('/requestForPoints', requestForPointsRouter)
+router.use('/agents', agentsRouter)
+router.use('/bookings', bookingsRouter)
+router.use('/rewards', rewardsRouter)
 
 module.exports = router
