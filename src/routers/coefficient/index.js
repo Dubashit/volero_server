@@ -54,7 +54,11 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const { salesId, percentage } = req.body
     try {
-        const coefficient = await Coefficient.create({ salesId: salesId, percentage: percentage })
+        const existingCoefficient = await Coefficient.findOne({ where: { salesId } });
+        if (existingCoefficient) {
+            return res.status(400).json({error:'error'});
+        }
+        const coefficient = await Coefficient.create({ salesId, percentage })
         res.status(200).json(coefficient)
     } catch (error) {
         res.status(500).json({ error: "Internal server error" })

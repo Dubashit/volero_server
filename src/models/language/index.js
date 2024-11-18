@@ -20,7 +20,7 @@ const Language = db.define(
         }
     },
     {
-        tableName: "language"
+        tableName: "languages"
     }
 )
 

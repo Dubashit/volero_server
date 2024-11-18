@@ -48,6 +48,10 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const { salesId, username } = req.body
     try {
+        const existingStopList = await StopList.findOne({ where: { username } });
+        if (existingStopList) {
+            return res.status(400).json({error:'error'});
+        }
         const stopList = await StopList.create({ salesId: salesId, username: username })
         res.status(200).json(stopList)
     } catch (error) {

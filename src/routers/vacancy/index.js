@@ -47,25 +47,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// router.post('/', async (req, res) => {
-//     const { title, status, seoUrl, seoTitle, seoDescription, body, location, employmentType } = req.body;
-//     try {
-//         const vacancy = await Vacancy.create({
-//             title: title,
-//             status: status,
-//             seoUrl: seoUrl,
-//             seoTitle: seoTitle,
-//             seoDescription: seoDescription,
-//             body: body,
-//             location: location,
-//             employmentType: employmentType
-//         });
-//         res.status(200).json(vacancy);
-//     } catch (error) {
-//         res.status(500).json({ error: "Internal server error" });
-//     }
-// });
-
 router.post('/', upload.none(), async (req, res) => {
     console.log(req.body);
 

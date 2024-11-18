@@ -35,7 +35,7 @@ const RequestForPoints = db.define(
         }
     },
     {
-        tableName: "requestForPoints"
+        tableName: "requestsForPoints"
     }
 )
 

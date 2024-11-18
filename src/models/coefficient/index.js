@@ -11,7 +11,8 @@ const Coefficient = db.define(
         },
         salesId: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         percentage: {
             type : DataTypes.STRING,
@@ -19,7 +20,7 @@ const Coefficient = db.define(
         }
     },
     {
-        tableName: "coefficient"
+        tableName: "coefficients"
     }
 )
 

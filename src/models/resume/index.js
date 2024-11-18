@@ -43,7 +43,7 @@ const Resume = db.define(
         }
     },
     {
-        tableName: "resume"
+        tableName: "resumes"
     }
 )
 

@@ -16,7 +16,7 @@ const Tag = db.define(
         }
     },
     {
-        tableName: "tag"
+        tableName: "tags"
     }
 )
 

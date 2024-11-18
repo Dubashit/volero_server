@@ -2,33 +2,38 @@ const router = require('express').Router()
 const { Op, where } = require('sequelize');
 const Agent = require('../../models/agent');
 
-// router.get('/search', async (req, res) => {
-//     const { salesId, percentage } = req.query;
-//     console.log('Received query:', { salesId, percentage });
+router.get('/search', async (req, res) => {
+    const { salesId, username, reseller } = req.query;
+    console.log('Received query:', { salesId, username, reseller });
 
-//     try {
-//         const whereClause = {};
-//         if (salesId) {
-//             whereClause.salesId = {
-//                 [Op.iLike]: `%${salesId}%`
-//             };
-//         }
-//         if (percentage) {
-//             whereClause.percentage = {
-//                 [Op.iLike]: `%${percentage}%`
-//             };
-//         }
-//         console.log('Constructed whereClause:', whereClause);
-//         const coefficients = await Coefficient.findAll({
-//             where: whereClause
-//         });
-//         console.log('Found coefficients:', coefficients);
-//         res.json(coefficients);
-//     } catch (error) {
-//         console.error('Error fetching coefficients:', error);
-//         res.status(500).json({ error: 'Internal Server Error' });
-//     }
-// });
+    try {
+        const whereClause = {};
+        if (salesId) {
+            whereClause.salesId = {
+                [Op.iLike]: `%${salesId}%`
+            };
+        }
+        if (username) {
+            whereClause.username = {
+                [Op.iLike]: `%${username}%`
+            };
+        }
+        if (reseller) {
+            whereClause.reseller = {
+                [Op.iLike]: `%${reseller}%`
+            };
+        }
+        console.log('Constructed whereClause:', whereClause);
+        const coefficients = await Agent.findAll({
+            where: whereClause
+        });
+        console.log('Found coefficients:', coefficients);
+        res.status(200).json(coefficients);
+    } catch (error) {
+        console.error('Error fetching coefficients:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 
 
@@ -41,11 +46,16 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/pointsData', async (req, res) => {
-    const { username, salesId } = req.query
+router.get('/pointsData/:username/:salesId', async (req, res) => {
+    const username = req.params.username
+    const salesId = req.params.salesId
     try {
         const agent = await Agent.findOne({ where: { username, salesId } })
-        res.status(200).json(agent)
+        if (agent) {
+            res.status(200).json(agent)
+        } else {
+            res.status(404).json({ message: 'Agent not found' })
+        }
     } catch (error) {
         res.status(500).json({ error: "Internal server error" })
     }

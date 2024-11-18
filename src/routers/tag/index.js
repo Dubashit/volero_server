@@ -31,6 +31,10 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
     const { title } = req.body;
     try {
+        const existingTag = await Tag.findOne({ where: { title } });
+        if (existingTag) {
+            return res.status(400).json({error:'error'});
+        }
         const tag = await Tag.create({ title: title });
         res.status(200).json(tag);
     } catch (error) {

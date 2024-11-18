@@ -56,7 +56,7 @@ const RequestRegister = db.define(
         },
     },
     {
-        tableName: "requestRegister"
+        tableName: "requestsRegister"
     }
 )
 
