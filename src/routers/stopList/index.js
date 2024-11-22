@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 const StopList = require('../../models/stopList')
 
 router.get('/search', async (req, res) => {
@@ -26,6 +26,35 @@ router.get('/search', async (req, res) => {
     }
 });
 
+router.get('/searchStopList', async (req, res) => {
+    const { salesId, username } = req.query;
+
+    try {
+        const stopLists = await StopList.findAll({ where: { salesId } });
+
+        if (stopLists.length === 0) {
+            return res.status(200).json({ isBlocked: false });
+        }
+
+        const stopListWithUsername = stopLists.find(stop => stop.username === username);
+        if (stopListWithUsername) {
+            return res.status(200).json({ isBlocked: true, reason: 'User blocked specifically' });
+        }
+
+        const stopListWithoutUsername = stopLists.find(stop => !stop.username || stop.username === '');
+        if (stopListWithoutUsername) {
+            return res.status(200).json({ isBlocked: true, reason: 'Sales ID globally blocked' });
+        }
+
+        return res.status(200).json({ isBlocked: false });
+
+    } catch (error) {
+        console.error('Error in /searchStopList:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 router.get('/', async (req, res) => {
     try {
         const stopLists = await StopList.findAll()
@@ -50,7 +79,7 @@ router.post('/', async (req, res) => {
     try {
         const existingStopList = await StopList.findOne({ where: { username } });
         if (existingStopList) {
-            return res.status(400).json({error:'error'});
+            return res.status(400).json({ error: 'error' });
         }
         const stopList = await StopList.create({ salesId: salesId, username: username })
         res.status(200).json(stopList)

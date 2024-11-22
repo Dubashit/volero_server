@@ -14,6 +14,7 @@ const requestForPointsRouter = require('./requestForPoints')
 const agentsRouter = require('./agent')
 const bookingsRouter = require('./booking')
 const rewardsRouter = require('./reward')
+const globalSettingRouter = require('./globalSetting')
 
 router.use('/users', userRouter)
 router.use('/auth', authRouter)
@@ -30,5 +31,6 @@ router.use('/requestForPoints', requestForPointsRouter)
 router.use('/agents', agentsRouter)
 router.use('/bookings', bookingsRouter)
 router.use('/rewards', rewardsRouter)
+router.use('/globalSetting', globalSettingRouter)
 
 module.exports = router

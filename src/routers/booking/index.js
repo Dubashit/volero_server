@@ -1,7 +1,10 @@
 const router = require('express').Router()
 const { Op, where } = require('sequelize');
 const Booking = require('../../models/booking')
-const Agent = require('../../models/agent')
+const Agent = require('../../models/agent');
+const Coefficient = require('../../models/coefficient');
+const GlobalSetting = require('../../models/globalSetting');
+const StopList = require('../../models/stopList');
 
 // router.get('/search', async (req, res) => {
 //     const { salesId, percentage } = req.query;
@@ -52,57 +55,89 @@ router.get('/:id', async (req, res) => {
     }
 })
 
-
 router.get('/userId/:userId', async (req, res) => {
     const userId = req.params.userId
     try {
-        const userBookings = await Booking.findAll({ where: { userId } })
-        res.status(200).json(userBookings)
+        const booking = await Booking.findAll({ where: { userId } })
+        res.status(200).json(booking)
     } catch (error) {
-        console.error(error)
         res.status(500).json({ error: "Internal server error" })
     }
 })
 
+
 router.post('/', async (req, res) => {
-    const { userId, sellingPrice, currency } = req.body
+    const { userId, sellingPrice, currency } = req.body;
+
     try {
+        // Получаем агента по userId
+        const agent = await Agent.findOne({ where: { id: userId } });
+        if (!agent) {
+            return res.status(404).json({ error: 'Agent not found' });
+        }
+
+        // Проверяем стоплист
+        const stopLists = await StopList.findAll({ where: { salesId: agent.salesId } });
+
+        // Проверяем, есть ли стоплист с username агента
+        const stopListWithUsername = stopLists.find(stop => stop.username === agent.username);
+
+        // Проверяем, есть ли глобальный стоплист с salesId
+        const stopListWithoutUsername = stopLists.find(stop => !stop.username || stop.username === '');
+
+        let pointsCollected = 0;
+        let reason = null;
+
+        if (!stopListWithUsername && !stopListWithoutUsername) {
+            // Если агент не в стоплисте, рассчитываем pointsCollected
+            const globalCoef = await GlobalSetting.findOne();
+            const coefficient = await Coefficient.findOne({ where: { salesId: agent.salesId } });
+
+            if (coefficient) {
+                pointsCollected = (sellingPrice * coefficient.percentage / 100).toFixed(2);
+            } else if (globalCoef) {
+                pointsCollected = (sellingPrice * globalCoef.percentage / 100).toFixed(2);
+            }
+        } else {
+            // Если агент или salesId в стоплисте, устанавливаем причину
+            reason = "Stop List";
+        }
+
+        // Создаем запись бронирования
         const booking = await Booking.create({
             userId,
             sellingPrice,
-            pointsCollected: (sellingPrice * 0.005).toFixed(2),
+            pointsCollected,
             currency
-        })
-        const agent = await Agent.findOne({ where: { id: userId } });
+        });
 
-        const bonus = sellingPrice * 0.005;
-
-        let usd = agent.dataValues.usd;
-        let eur = agent.dataValues.eur;
-        let gbp = agent.dataValues.gbp;
+        // Рассчитываем и обновляем валютные бонусы агента
+        let { usd, eur, gbp } = agent;
 
         if (currency === 'USD') {
-            usd = parseFloat(agent.dataValues.usd) + parseFloat(bonus.toFixed(2));
+            usd = parseFloat(usd) + parseFloat(pointsCollected);
         } else if (currency === 'EUR') {
-            eur = parseFloat(agent.dataValues.eur) + parseFloat(bonus.toFixed(2));
+            eur = parseFloat(eur) + parseFloat(pointsCollected);
         } else if (currency === 'GBP') {
-            gbp = parseFloat(agent.dataValues.gbp) + parseFloat(bonus.toFixed(2));
+            gbp = parseFloat(gbp) + parseFloat(pointsCollected);
         } else {
             return res.status(400).json({ error: 'Invalid currency' });
         }
 
-        await Agent.update({
-            usd: usd,
-            eur: eur,
-            gbp: gbp
-        }, { where: { id: userId } })
+        await Agent.update(
+            { usd, eur, gbp },
+            { where: { id: userId } }
+        );
 
-        res.status(200).json(booking)
+        res.status(200).json({ ...booking.dataValues, reason });
+
     } catch (error) {
         console.error(error);
-        res.status(501).json({ error: "Internal server error" })
+        res.status(501).json({ error: 'Internal server error' });
     }
-})
+});
+
+
 
 router.put('/:id', async (req, res) => {
     const id = req.params.id
