@@ -5,8 +5,8 @@ const Agent = db.define(
     "Agent",
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: DataTypes.INTEGER,
+            allowNull: false,
             primaryKey: true
         },
         reseller: {
@@ -26,7 +26,7 @@ const Agent = db.define(
             type: DataTypes.STRING,
             allowNull: true
         },
-        fullName: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false
         },

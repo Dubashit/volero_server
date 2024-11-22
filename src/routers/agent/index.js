@@ -72,19 +72,30 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const { reseller, salesId, username, email, fullName, usd, eur, gbp } = req.body
+    const { id, reseller, salesId, username, email, name } = req.body
     try {
-        const agent = await Agent.create({
-            reseller,
-            salesId,
-            username,
-            email: email || '',
-            fullName,
-            usd,
-            eur,
-            gbp
-        })
-        res.status(200).json(agent)
+        const [agent, created] = await Agent.findOrCreate({
+            where: { username },
+            defaults: {
+                id,
+                reseller,
+                salesId,
+                username,
+                email,
+                name,
+                usd: 0,
+                eur: 0,
+                gbp: 0,
+            },
+        });
+
+        if (created) {
+            console.log('Agent created:', agent);
+            res.status(201).json(agent);
+        } else {
+            console.log('Agent already exists:', agent);
+            res.status(200).json(agent);
+        }
     } catch (error) {
         console.error(error);
         res.status(501).json({ error: "Internal server error" })

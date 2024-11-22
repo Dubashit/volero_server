@@ -63,24 +63,44 @@ router.post("/", async (req, res) => {
     }
 })
 
-router.put("/:username", async (req, res) => {
-    const { password, newPassword } = req.body
-    const username = req.params.username
+// router.put("/:username", async (req, res) => {
+//     const { password, newPassword } = req.body
+//     const username = req.params.username
+//     try {
+//         const user = await User.findOne({ where: { username } });
+//         if (!user) {
+//             return res.status(404).json({ message: "User not found" });
+//         }
+//         const isPasswordCorrect = await bcrypt.compare(password, user.password);
+//         if (!isPasswordCorrect) {
+//             return res.json({ message: "Current password is incorrect" });
+//         }
+//         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+//         await User.update(
+//             { password: hashedNewPassword },
+//             { where: { username } }
+//         );
+//         res.status(200).json({ message: "Password updated successfully" });
+//     } catch (error) {
+//         console.error('Error updating password:', error);
+//         res.status(500).json({ error: error.message });
+//     }
+// })
+
+router.put("/:id", async (req, res) => {
+    const { username, password } = req.body
+    const id = req.params.id
     try {
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { id } });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
-        if (!isPasswordCorrect) {
-            return res.json({ message: "Current password is incorrect" });
-        }
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        await User.update(
-            { password: hashedNewPassword },
-            { where: { username } }
-        );
-        res.status(200).json({ message: "Password updated successfully" });
+        const hashedNewPassword = await bcrypt.hash(password, 10);
+        await user.update({
+            username,
+            password: hashedNewPassword
+        });
+        res.status(200).json({ message: "Data changed" });
     } catch (error) {
         console.error('Error updating password:', error);
         res.status(500).json({ error: error.message });

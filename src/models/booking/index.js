@@ -5,12 +5,12 @@ const Booking = db.define(
     "Booking",
     {
         id: {
-            type: DataTypes.UUID,
-            defaultValue: DataTypes.UUIDV4,
+            type: DataTypes.INTEGER,
+            allowNull: false,
             primaryKey: true
         },
         userId: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         sellingPrice: {

@@ -1,27 +1,23 @@
-const https = require('https');
-const fs = require('fs');
 const app = require('./src/app');
-const selfsigned = require('selfsigned');
 
 const PORT = process.env.PORT;
 
-const attrs = [{ name: 'commonName', value: 'localhost' }];
-const pems = selfsigned.generate(attrs, { days: 365 });
-
 if (process.env.ENV === "dev") {
-    app.listen(PORT, ()=>{
+    app.listen(PORT, () => {
         console.log(`DEV server running on port ${PORT}`)
     })
 } else if (process.env.ENV === "prod") {
-    fs.writeFileSync('server.key', pems.private);
-    fs.writeFileSync('server.cert', pems.cert);
-
-    const sslOptions = {
-        key: pems.private,
-        cert: pems.cert
+    const options = {
+        key: fs.readFileSync('/etc/letsencrypt/live/xn--voler-yta.com/privkey.pem'),
+        cert: fs.readFileSync('/etc/letsencrypt/live/xn--voler-yta.com/fullchain.pem'),
     };
 
-    https.createServer(sslOptions, app).listen(PORT, () => {
-        console.log(`PROD server running on port ${PORT}`);
+    app.get('/', (req, res) => {
+        res.send('SERVER - HTTPS!');
     });
+
+    https.createServer(options, app).listen(3000, () => {
+        console.log('HTTPS server running on https://volero.com:3000');
+    });
+
 }
