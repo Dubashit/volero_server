@@ -60,12 +60,6 @@ db.authenticate()
     })
     .catch(err => console.error("Error connection to the database", err))
 
-db.sync({ force: false })
-    .then(() => {
-        console.log("Database & tables created!");
-    })
-    .catch(error => {
-        console.error("Error creating database & tables:", error);
-    });
+db.sync()
 
 module.exports = app
